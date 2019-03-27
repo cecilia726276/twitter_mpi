@@ -4,10 +4,15 @@ import re
 
 
 def regex(str):
-	pattern1 = r"geo\".+\"coordinates\" : \[ (.+?) \]"
+	pattern1 = r"\"geo\" : { \"type\" : \"Point\", \"coordinates\" : \[ (.+?) \] }"
+	# pattern1 = r"\"geo\" :.+\"coordinates\" : \[ (.+?) \]"
+	# sbatch xxx.slurm
+	# sbatch --array=1-10
+	# squeue -u lev
+
 	pattern2 = r"hashtags.+text\" : \"(.+?)\""
 	try:
-		ms = re.findall(pattern2, str)
+		ms = re.findall(pattern1, str)
 	except Exception:
 		print("null to match")
 		return None
@@ -27,10 +32,9 @@ if __name__ == "__main__":
 			print(type(m_list))
 			print(m_list)
 			if m_list:
-				hashTag = m_list[0]
-				print hashTag
-				# coordList = m_list[0].split(', ')
-				# coord = [float(x) for x in coordList]
-				# print(coord)
+
+				coordList = m_list[0].split(', ')
+				coord = [float(x) for x in coordList]
+				print(coord)
 			print ("\n")
 			line = file.readline()
