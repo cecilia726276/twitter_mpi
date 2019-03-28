@@ -48,7 +48,7 @@ class MelbGrid(object):
 
 def readMelbGrid(filename): # this function is used to load the MelbGrid objects from the file. return @list
                             # It's not necessary exist in this file
-    file = open(filename, encoding='utf-8')
+    file = open(filename, "rU")
     gridJson = json.load(file)
     features = []
     features = gridJson['features']
@@ -64,7 +64,7 @@ def readMelbGrid(filename): # this function is used to load the MelbGrid objects
         # print(type(gridObjList[0].xmin))   xmin is float, id is str
     return gridObjList
 
-
+'''
 if __name__ == "__main__": # use for testing
     gridList = readMelbGrid("melbGrid.json")
     for i in range(0, len(gridList)):
@@ -78,6 +78,6 @@ if __name__ == "__main__": # use for testing
 
     # sort the hashtags from largest to lower for each grid
     #print(sorted(tagList.items(), key=lambda x: x[1], reverse=True))
-
+'''
 
 
