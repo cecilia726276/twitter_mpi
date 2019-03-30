@@ -10,7 +10,7 @@ size = comm.Get_size()
 
 if rank == 0:  # define as root node, calculate the total number of lines given the json file, then divide the tasks into several processors.
     count = -1
-    for count, line in enumerate(open("tinyTwitter.json", "rU")):
+    for count, line in enumerate(open("smallTwitter.json", "rU")):
         pass
     count += 1
     print "count = %d from processor %d" % (count, rank)
@@ -36,33 +36,39 @@ gridList = MelbGrid.readMelbGrid("melbGrid.json")
 
 # now start to process data from twitter dataset
 cursor = 0
-with open("tinyTwitter.json", "rU") as whole_data:
+with open("smallTwitter.json", "rU") as whole_data:
     line = whole_data.readline()
     # could resolve multiple cores issues, what if multiple nodes (scatter?)
     while line:
         cursor += 1
         if cursor > start_line and cursor <= end_line:
-			coorstr_list = str_extract.regex(line, 1)
-                        #print "coorstr_list: "
-                        #print coorstr_list
-                        hashtags_list = str_extract.regex(line, 2)
-			if len(hashtags_list) > 0:
-				hashtags_text = hashtags_list[0]
-			else:
-				hashtags_text = None
-                        
-                        if coorstr_list:
-			    coordList = coorstr_list[0].split(', ')
-			    coord = [float(x) for x in coordList]
-			    x = coord[1]
-			    y = coord[0]
-                            #print "x = %f, y = %f" % (x,y)
-			    for i in range(0, len(gridList)):
-			        if gridList[i].checkInGrid(x, y, hashtags_text): #(x,y,hashtags_text) if find one grid,then stop matching
-				    break
-            #print "line from processor %d: " % rank
-            #print line
+            coorstr_list = str_extract.regex(line, 1)
+            if coorstr_list:
+                coordList = coorstr_list[0].split(',')
+                coord = [float(x) for x in coordList]
+                x = coord[0]
+                y = coord[1]
+                hashtags_list = str_extract.regex(line, 2)
+		if hashtags_list != None and len(hashtags_list) > 0:
+                    mstr = "{" + hashtags_list[0] + "}"
+                    try:
+                        hash_dict = eval(mstr)
+                    except Exception:
+                        hash_dict = None
+                else:
+                    hash_dict = None
+
+                for i in range(0, len(gridList)):
+                    if(gridList[i].checkInGrid(x, y)): # check the coordinates in which region
+                        gridList[i].addpostcount()
+                        if hash_dict != None:
+                            for j in range(0, len(hash_dict["hashtags"])):
+                                gridList[i].addhashtags(hash_dict["hashtags"][j]['text'])
+                        break
+        # print "line from processor %d: " % rank
+        # print line
         line = whole_data.readline()
+
     print "grid info from processor %d: " % rank
     for obj in gridList:
 	print obj.id

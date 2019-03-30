@@ -18,31 +18,26 @@ class MelbGrid(object):
             newDict = {str: 1}
             self.hashtagsList.update(newDict)
 
-    def checkInGrid(self, x, y, text): # each data line calls it by entering its x,y coordinates,and hashtags' text
+    def addpostcount(self):
+        self.postCount += 1
+
+    def addhashtags(self, text):
+        if text != None:
+            self.updateHashtagsList(text)
+
+    def checkInGrid(self, x, y): # each data line calls it by entering its x,y coordinates,and hashtags' text
                                        # the outcome is to update each grid object's postCount and hashtagsList
         if self.id == "A1":
             if x >= self.xmin and x <= self.xmax and y >= self.ymin and y <= self.ymax:
-                self.postCount += 1
-                if text != None:
-                    self.updateHashtagsList(text)
                 return True
         elif self.id == "A2" or self.id == "A3" or self.id == "A4" or self.id == "C5":
             if x > self.xmin and x <= self.xmax and y >= self.ymin and y <= self.ymax:
-                self.postCount += 1
-                if text != None:
-                    self.updateHashtagsList(text)
                 return True
         elif self.id == "B1" or self.id == "C1" or self.id == "D3":
             if x >= self.xmin and x <= self.xmax and y > self.ymin and y <= self.ymax:
-                self.postCount += 1
-                if text != None:
-                    self.updateHashtagsList(text)
                 return True
         else:    #"B2" "B3"  "B4" "C2" "C3"  "C4"  "D4"  "D5"
             if x > self.xmin and x <= self.xmax and y > self.ymin and y <= self.ymax:
-                self.postCount += 1
-                if text != None:
-                    self.updateHashtagsList(text)
                 return True
         return False
 
