@@ -34,10 +34,10 @@ class MelbGrid(object):
             if x > self.xmin and x <= self.xmax and y >= self.ymin and y <= self.ymax:
                 return True
         elif self.id == "B1" or self.id == "C1" or self.id == "D3":
-            if x >= self.xmin and x <= self.xmax and y > self.ymin and y <= self.ymax:
+            if x >= self.xmin and x <= self.xmax and y >= self.ymin and y < self.ymax:
                 return True
         else:    #"B2" "B3"  "B4" "C2" "C3"  "C4"  "D4"  "D5"
-            if x > self.xmin and x <= self.xmax and y > self.ymin and y <= self.ymax:
+            if x > self.xmin and x <= self.xmax and y >= self.ymin and y < self.ymax:
                 return True
         return False
 
