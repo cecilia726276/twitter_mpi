@@ -28,7 +28,7 @@ if rank != size - 1 or (count % size == 0):
 else:
     rest = count % size
     print "rest = %d from processor %d" % (rest, rank)
-    end_line = start_line + rest
+    end_line = start_line + rest + tasks
 print "end_line = %d from processor %d" % (end_line, rank)
 
 # each processor scan melbGrid to initial grid object first

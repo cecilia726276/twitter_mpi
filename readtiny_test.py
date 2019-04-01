@@ -28,7 +28,7 @@ if rank != size - 1 or (count % size == 0):
 else:
     rest = count % size
     print "rest = %d from processor %d" % (rest, rank)
-    end_line = start_line + rest
+    end_line = start_line + rest + tasks
 print "end_line = %d from processor %d" % (end_line, rank)
 
 # each processor scan melbGrid to initial grid object first
@@ -72,11 +72,13 @@ with open("tinyTwitter(updated).json", "rU") as whole_data:
         # print "line from processor %d: " % rank
         # print line
         line = whole_data.readline()
+for obj in gridList:
+    print 'subprocess ' + str(rank) + ' ' + obj.id + ': ' + str(obj.postCount)
 
 recv_objList = comm.gather(gridList, root = 0) # gather the grid list to No. 1 process.
 if rank == 0:
-	for i in range(1, len(recv_objList)):
-		for j in range(0, len(gridList)):
+    for i in range(1, len(recv_objList)):
+        for j in range(0, len(gridList)):
 			recv_objList[0][j].postCount += recv_objList[i][j].postCount
 			# for key,value in recv_objList[i][j].hashtagsList.items():
 			# 	if key in recv_objList[0][j].hashtagsList:
