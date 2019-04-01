@@ -10,7 +10,7 @@ size = comm.Get_size()
 
 if rank == 0:  # define as root node, calculate the total number of lines given the json file, then divide the tasks into several processors.
     count = -1
-    for count, line in enumerate(open("tinyTwitter.json", "rU")):
+    for count, line in enumerate(open("tinyTwitter(updated).json", "rU")):
         pass
     count += 1
     print "count = %d from processor %d" % (count, rank)
@@ -36,7 +36,7 @@ gridList = MelbGrid.readMelbGrid("melbGrid.json")
 
 # now start to process data from twitter dataset
 cursor = 0
-with open("tinyTwitter.json", "rU") as whole_data:
+with open("tinyTwitter(updated).json", "rU") as whole_data:
     line = whole_data.readline()
     # could resolve multiple cores issues, what if multiple nodes (scatter?)
     while line:
@@ -58,32 +58,34 @@ with open("tinyTwitter.json", "rU") as whole_data:
                 else:
                     hash_dict = None
 
+                a = 0  ###
                 for i in range(0, len(gridList)):
                     if(gridList[i].checkInGrid(x, y)): # check the coordinates in which region
+                        a = 1 ###
                         gridList[i].addpostcount()
                         if hash_dict != None:
                             for j in range(0, len(hash_dict["hashtags"])):
                                 gridList[i].addhashtags(hash_dict["hashtags"][j]['text'])
                         break
+                if a == 0:
+                    print("not on the map:" + '[' + str(x) + ',' + str(y) + ']')
         # print "line from processor %d: " % rank
         # print line
         line = whole_data.readline()
-	
-recv_objList = comm.gather(gridList, root = 1) # gather the grid list to No. 1 process.
-if rank == 1:
+
+recv_objList = comm.gather(gridList, root = 0) # gather the grid list to No. 1 process.
+if rank == 0:
 	for i in range(1, len(recv_objList)):
 		for j in range(0, len(gridList)):
 			recv_objList[0][j].postCount += recv_objList[i][j].postCount
-			for key,value in recv_objList[i][j].hashtagsList.items():
-				if key in recv_objList[0][j].hashtagsList:
-					recv_objList[0][j].hashtagsList[key] += value
-				else:
-					recv_objList[0][j].hashtagsList[key] = value
-						
+			# for key,value in recv_objList[i][j].hashtagsList.items():
+			# 	if key in recv_objList[0][j].hashtagsList:
+			# 		recv_objList[0][j].hashtagsList[key] += value
+			# 	else:
+			# 		recv_objList[0][j].hashtagsList[key] = value
+
 	print "grid info from processor %d: " % rank
 	for obj in recv_objList[0]:
-		print obj.id
-		print obj.postCount
-		print obj.hashtagsList
-	
-    
+		print obj.id + ': ' + str(obj.postCount)
+		# print obj.hashtagsList
+

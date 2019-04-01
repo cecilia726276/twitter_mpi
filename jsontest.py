@@ -1,5 +1,6 @@
 import json
 
+# convert json file into python object
 def loadJsonFile(fileName):
     file = open(fileName, encoding='utf-8')
     list = []

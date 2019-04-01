@@ -10,7 +10,7 @@ size = comm.Get_size()
 
 if rank == 0:  # define as root node, calculate the total number of lines given the json file, then divide the tasks into several processors.
     count = -1
-    for count, line in enumerate(open("tinyTwitter.json", "rU")):
+    for count, line in enumerate(open("file-0.json", "rU")):
         pass
     count += 1
     print "count = %d from processor %d" % (count, rank)
@@ -36,7 +36,7 @@ gridList = MelbGrid.readMelbGrid("melbGrid.json")
 
 # now start to process data from twitter dataset
 cursor = 0
-with open("tinyTwitter.json", "rU") as whole_data:
+with open("file-0.json", "rU") as whole_data:
     line = whole_data.readline()
     # could resolve multiple cores issues, what if multiple nodes (scatter?)
     while line:
@@ -44,8 +44,9 @@ with open("tinyTwitter.json", "rU") as whole_data:
         if cursor > start_line and cursor <= end_line:
             m_list = str_extract2.regex(line[:-2])
             if m_list[0] and len(m_list[0]) > 1:
-                x = m_list[0][0]
-                y = m_list[0][1]
+                x = m_list[0][1]
+                y = m_list[0][0]
+                print('x: ' + str(x) + ' y: ' + str(y))
                 for i in range(0, len(gridList)):
                     if(gridList[i].checkInGrid(x, y)): # check the coordinates in which region
                         gridList[i].addpostcount()
