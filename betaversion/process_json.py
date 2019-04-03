@@ -11,7 +11,7 @@ size = comm.Get_size()
 # We define process 0 as the root process,
 # calculate the total number of lines given the json file,
 # and distribute the tasks into several processors.
-if rank == 0 :
+if rank == 0:
     count = -1
     for count, line in enumerate(open("file-0.json", "rU")):
         pass
@@ -65,11 +65,12 @@ if rank == 0:
     for i in range(1, len(recv_objList)):
         for j in range(0, len(gridList)):
             recv_objList[0][j].postCount += recv_objList[i][j].postCount
-        for key, value in recv_objList[i][j].hashtagsList.items():
-            if key in recv_objList[0][j].hashtagsList:
-                recv_objList[0][j].hashtagsList[key] += value
-            else:
-                recv_objList[0][j].hashtagsList[key] = value
+
+            for key, value in recv_objList[i][j].hashtagsList.items():
+                if key in recv_objList[0][j].hashtagsList:
+                    recv_objList[0][j].hashtagsList[key] += value
+                else:
+                    recv_objList[0][j].hashtagsList[key] = value
 
     print "grid info from processor %d: " % rank
 
