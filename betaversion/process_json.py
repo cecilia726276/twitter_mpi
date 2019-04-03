@@ -13,7 +13,7 @@ size = comm.Get_size()
 # and distribute the tasks into several processors.
 if rank == 0:
     count = -1
-    for count, line in enumerate(open("file-0.json", "rU")):
+    for count, line in enumerate(open("bigTwitter.json", "rU")):
         pass
     count += 1
     # print "count = %d from processor %d" % (count, rank)
@@ -40,7 +40,7 @@ gridList = MelbGrid.readMelbGrid("melbGrid.json")
 
 # Start processing the data from twitter dataset
 cursor = 0
-with open("file-0.json", "rU") as whole_data:
+with open("bigTwitter.json", "rU") as whole_data:
     line = whole_data.readline()
     while line:
         cursor += 1
