@@ -54,8 +54,13 @@ with open("bigTwitter.json", "rU") as whole_data:
                     if gridList[i].checkInGrid(x, y):
                         gridList[i].addpostcount()
                         if m_list[1] and len(m_list[1]) > 0:
+                            rephashtags = []
                             for j in range(0, len(m_list[1])):
-                                gridList[i].addhashtags((m_list[1][j]['text'].encode('utf-8').lower()))
+                                hashstr = m_list[1][j]['text'].encode('utf-8').lower()
+                                if hashstr in rephashtags:
+                                    continue
+                                gridList[i].addhashtags(hashstr)
+                                rephashtags.append(hashstr)
                         break
         line = whole_data.readline()
 
