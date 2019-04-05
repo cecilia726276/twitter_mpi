@@ -9,44 +9,45 @@ comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
 size = comm.Get_size()
 
-# We define process 0 as the root process,
-# calculate the total number of lines given the json file,
-# and distribute the tasks into several processors.
 if rank == 0:
     startTime = time.time()
-    count = -1
-    for count, line in enumerate(open("file-0.json", "rU")):
-        pass
-    count += 1
-    # print "count = %d from processor %d" % (count, rank)
-
-# The master process broadcasts the total number of the lines.
-count = comm.bcast(count if rank == 0 else None, root=0)
-tasks = count / size
-# print "tasks = %d from processor %d" % (tasks, rank)
-
-# Each process decides on which line to start/end reading.
-start_line = rank * tasks
-# print "start_line = %d from processor %d" % (start_line, rank)
-end_line = 0
-if rank != size - 1 or (count % size == 0):
-    end_line = start_line + tasks
-else:
-    rest = count % size
-    # print "rest = %d from processor %d" % (rest, rank)
-    end_line = start_line + rest + tasks
-# print "end_line = %d from processor %d" % (end_line, rank)
-
-# Each processor scans melbGrid to initialize the grid.
+# # We define process 0 as the root process,
+# # calculate the total number of lines given the json file,
+# # and distribute the tasks into several processors.
+# if rank == 0:
+#     startTime = time.time()
+#     count = -1
+#     for count, line in enumerate(open("file-0.json", "rU")):
+#         pass
+#     count += 1
+#     # print "count = %d from processor %d" % (count, rank)
+#
+# # The master process broadcasts the total number of the lines.
+# count = comm.bcast(count if rank == 0 else None, root=0)
+# tasks = count / size
+# # print "tasks = %d from processor %d" % (tasks, rank)
+#
+# # Each process decides on which line to start/end reading.
+# start_line = rank * tasks
+# # print "start_line = %d from processor %d" % (start_line, rank)
+# end_line = 0
+# if rank != size - 1 or (count % size == 0):
+#     end_line = start_line + tasks
+# else:
+#     rest = count % size
+#     # print "rest = %d from processor %d" % (rest, rank)
+#     end_line = start_line + rest + tasks
+# # print "end_line = %d from processor %d" % (end_line, rank)
+#
+# # Each processor scans melbGrid to initialize the grid.
 gridList = MelbGrid.readMelbGrid("melbGrid.json")
 
 # Start processing the data from twitter dataset
 cursor = 0
-with open("file-0.json", "rU") as whole_data:
-    line = whole_data.readline()
-    while line:
+with open("bigTwitter.json", "rU") as whole_data:
+    for line in whole_data:
         cursor += 1
-        if start_line < cursor <= end_line:
+        if rank == cursor % size:
             m_list = str_extract_json.regex(line[:-1])
             if m_list[0] and len(m_list[0]) > 1:
                 x = m_list[0][1]
@@ -64,7 +65,6 @@ with open("file-0.json", "rU") as whole_data:
                                 gridList[i].addhashtags(hashstr)
                                 rephashtags.append(hashstr)
                         break
-        line = whole_data.readline()
 
 recv_objList = comm.gather(gridList, root=0)  # gather the grid list to No. 1 process.
 if rank == 0:
