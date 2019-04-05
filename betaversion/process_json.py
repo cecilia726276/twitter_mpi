@@ -59,11 +59,12 @@ with open("bigTwitter.json", "rU") as whole_data:
                         if m_list[1] and len(m_list[1]) > 0:
                             rephashtags = []
                             for j in range(0, len(m_list[1])):
-                                hashstr = m_list[1][j]['text'].encode('utf-8').lower()
+                                hashstr = m_list[1][j].encode('utf-8').lower()
                                 if hashstr in rephashtags:
                                     continue
                                 gridList[i].addhashtags(hashstr)
                                 rephashtags.append(hashstr)
+
                         break
 
 recv_objList = comm.gather(gridList, root=0)  # gather the grid list to No. 1 process.

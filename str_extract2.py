@@ -16,24 +16,30 @@ def regex(str):
 				if "coordinates" in str_dict["doc"]["geo"]:
 					coordinates = str_dict["doc"]["geo"]["coordinates"]
 		if "doc" in str_dict:
-			if "entities" in str_dict["doc"]:
-				if "hashtags" in str_dict["doc"]["entities"]:
-					hashtags = str_dict["doc"]["entities"]["hashtags"]
+			if "text" in str_dict["doc"]:
+				hashtags = str_dict["doc"]["text"]
+				pattern = r"(?= (#.+?) )"
+				matchList = re.findall(pattern, hashtags)
 
 	except Exception:
 		print("None to match")
 		return None, None
 	else:
-		return coordinates, hashtags
+		return coordinates, matchList
 
 if __name__ == "__main__":
 	# with open("tinyTwitter.json", "r", encoding='UTF-8') as file:
-	with open("file-0.json", "rU") as file:
+	with open("file-0.json", "r") as file:
 		line = file.readline()
 		line = file.readline()
-		print(line)
+		m_list = regex(line[:-2])
+		print(m_list[0])
+		print(type(m_list[1]))
+		print(m_list[1])
+		# print(line)
+		'''
 		while line:
-			m_list = regex(line[:-2])
+			
 			print("coor:")
 			print(type(m_list[0][1]))
 			print(m_list[0][1])
@@ -47,7 +53,7 @@ if __name__ == "__main__":
 
 			print("\n")
 			line = file.readline()
-
+		'''
 
 
 # def regex(str):

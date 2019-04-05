@@ -1,5 +1,6 @@
 # extract coordinates and hashtags from lines
 import json
+import re
 
 
 def regex(string):
@@ -15,12 +16,13 @@ def regex(string):
 				if "coordinates" in str_dict["doc"]["geo"]:
 					coordinates = str_dict["doc"]["geo"]["coordinates"]
 		if "doc" in str_dict:
-			if "entities" in str_dict["doc"]:
-				if "hashtags" in str_dict["doc"]["entities"]:
-					hashtags = str_dict["doc"]["entities"]["hashtags"]
+			if "text" in str_dict["doc"]:
+				hashtags = str_dict["doc"]["text"]
+				pattern = r"(?= (#.+?) )"
+				matchList = re.findall(pattern, hashtags)
 
 	except Exception:
 		# print("None to match")
 		return None, None
 	else:
-		return coordinates, hashtags
+		return coordinates, matchList
