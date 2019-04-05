@@ -12,30 +12,31 @@ size = comm.Get_size()
 # We define process 0 as the root process,
 # calculate the total number of lines given the json file,
 # and distribute the tasks into several processors.
-if rank == 0:
-    startTime = time.time()
-    count = -1
-    for count, line in enumerate(open("file-0.json", "rU")):
-        pass
-    count += 1
-    # print "count = %d from processor %d" % (count, rank)
-
-# The master process broadcasts the total number of the lines.
-count = comm.bcast(count if rank == 0 else None, root=0)
-tasks = count / size
-# print "tasks = %d from processor %d" % (tasks, rank)
-
-# Each process decides on which line to start/end reading.
-start_line = rank * tasks
-# print "start_line = %d from processor %d" % (start_line, rank)
-end_line = 0
-if rank != size - 1 or (count % size == 0):
-    end_line = start_line + tasks
-else:
-    rest = count % size
-    # print "rest = %d from processor %d" % (rest, rank)
-    end_line = start_line + rest + tasks
-# print "end_line = %d from processor %d" % (end_line, rank)
+# if rank == 0:
+#     startTime = time.time()
+#     count = -1
+#     for count, line in enumerate(open("file-0.json", "rU")):
+#         pass
+#     count += 1
+#     # print "count = %d from processor %d" % (count, rank)
+#
+# # The master process broadcasts the total number of the lines.
+# count = comm.bcast(count if rank == 0 else None, root=0)
+# tasks = count / size
+# # print "tasks = %d from processor %d" % (tasks, rank)
+#
+#
+# # Each process decides on which line to start/end reading.
+# start_line = rank * tasks
+# # print "start_line = %d from processor %d" % (start_line, rank)
+# end_line = 0
+# if rank != size - 1 or (count % size == 0):
+#     end_line = start_line + tasks
+# else:
+#     rest = count % size
+#     # print "rest = %d from processor %d" % (rest, rank)
+#     end_line = start_line + rest + tasks
+# # print "end_line = %d from processor %d" % (end_line, rank)
 
 # Each processor scans melbGrid to initialize the grid.
 gridList = MelbGrid.readMelbGrid("melbGrid.json")
@@ -46,7 +47,7 @@ with open("file-0.json", "rU") as whole_data:
     line = whole_data.readline()
     while line:
         cursor += 1
-        if start_line < cursor <= end_line:
+        if rank == cursor % size:
             m_list = str_extract_json.regex(line[:-1])
             if m_list[0] and len(m_list[0]) > 1:
                 x = m_list[0][1]
@@ -56,13 +57,8 @@ with open("file-0.json", "rU") as whole_data:
                     if gridList[i].checkInGrid(x, y):
                         gridList[i].addpostcount()
                         if m_list[1] and len(m_list[1]) > 0:
-                            rephashtags = []
                             for j in range(0, len(m_list[1])):
-                                hashstr = m_list[1][j]['text'].encode('utf-8').lower()
-                                if hashstr in rephashtags:
-                                    continue
-                                gridList[i].addhashtags(hashstr)
-                                rephashtags.append(hashstr)
+                                gridList[i].addhashtags((m_list[1][j]['text'].encode('utf-8').lower()))
                         break
         line = whole_data.readline()
 
